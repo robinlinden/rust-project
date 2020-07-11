@@ -19,7 +19,7 @@ extern "system" {
 }
 
 #[cfg(windows)]
-fn message_box(title: String, caption: String) {
+fn message_dialog(title: String, caption: String) {
     let title = CString::new(title.into_bytes()).unwrap();
     let caption = CString::new(caption.into_bytes()).unwrap();
     unsafe {
@@ -33,7 +33,7 @@ fn message_box(title: String, caption: String) {
 }
 
 #[cfg(not(windows))]
-fn message_box(title: String, caption: String) {
+fn message_dialog(title: String, caption: String) {
     println!("{}", title.as_str());
     println!("{}", caption.as_str());
 }
@@ -74,7 +74,7 @@ fn yes_no_dialog(title: String, caption: String, yes_cb: impl Fn() -> (), no_cb:
 }
 
 fn main() {
-    message_box(String::from("Great title"), String::from("Hello world"));
+    message_dialog(String::from("Great title"), String::from("Hello world"));
     yes_no_dialog(
         String::from("Do you like boxes?"),
         String::from("y/n?"),
