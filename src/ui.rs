@@ -1,91 +1,76 @@
-#![allow(bad_style)]
+#[cfg(windows)]
+mod winapi {
+    #![allow(bad_style)]
+
+    use std::os::raw::{c_char, c_ushort, c_int, c_uint, c_void};
+
+    #[cfg(target_pointer_width = "32")]
+    use std::os::raw::{c_long};
+
+    pub type UINT = c_uint;
+    pub type HWND = *mut c_void;
+    pub type LPCSTR = *const c_char;
+    pub type WORD = c_ushort;
+    pub type ATOM = WORD;
+
+    #[cfg(target_pointer_width = "64")]
+    pub type __u64 = u64;
+
+    #[cfg(target_pointer_width = "32")]
+    pub type UINT_PTR = c_uint;
+    #[cfg(target_pointer_width = "64")]
+    pub type UINT_PTR = __u64;
+
+    #[cfg(target_pointer_width = "32")]
+    pub type LONG_PTR = c_long;
+    #[cfg(target_pointer_width = "64")]
+    pub type LONG_PTR = __u64;
+
+    pub type LPARAM = LONG_PTR;
+    pub type WPARAM = UINT_PTR;
+    pub type LRESULT = LONG_PTR;
+    pub type PVOID = *mut c_void;
+    pub type HANDLE = PVOID;
+    pub type HINSTANCE = HANDLE;
+    pub type HICON = HANDLE;
+    pub type HBRUSH = HANDLE;
+    pub type HCURSOR = HICON;
+    pub type WNDPROC = extern fn(HWND, UINT, WPARAM, LPARAM) -> LRESULT;
+
+    #[repr(C)]
+    pub struct tagWNDCLASSEXA {
+        pub cbSize: UINT,
+        pub style: UINT,
+        pub lpfnWndProc: WNDPROC,
+        pub cbClsExtra: c_int,
+        pub cbWndExtra: c_int,
+        pub hInstance: HINSTANCE,
+        pub hIcon: HICON,
+        pub hCursor: HCURSOR,
+        pub hbrBackground: HBRUSH,
+        pub lpszMenuName: LPCSTR,
+        pub lpszClassName: LPCSTR,
+        pub hIconSm: HICON,
+    }
+    pub type WNDCLASSEXA = tagWNDCLASSEXA;
+
+    #[link(name = "user32")]
+    extern "system" {
+        pub fn MessageBoxA(hWnd: HWND, lpText: LPCSTR, lpCaption: LPCSTR, uType: UINT) -> c_int;
+        pub fn RegisterClassExA(Arg1: *const WNDCLASSEXA) -> ATOM;
+    }
+}
 
 #[cfg(windows)]
 use {
+    winapi::*,
     std::ffi::CString,
-    std::os::raw::{c_char, c_ushort, c_int, c_uint, c_void},
     std::ptr::null_mut,
 };
 
-#[cfg(target_pointer_width = "32")]
-use {
-    std::os::raw::{c_long},
-};
-
 #[cfg(windows)]
-type UINT = c_uint;
-#[cfg(windows)]
-type HWND = *mut c_void;
-#[cfg(windows)]
-type LPCSTR = *const c_char;
-#[cfg(windows)]
-type WORD = c_ushort;
-#[cfg(windows)]
-type ATOM = WORD;
-
-#[cfg(all(windows, target_pointer_width = "64"))]
-type __u64 = u64;
-
-#[cfg(all(windows, target_pointer_width = "32"))]
-type UINT_PTR = c_uint;
-#[cfg(all(windows, target_pointer_width = "64"))]
-type UINT_PTR = __u64;
-
-#[cfg(all(windows, target_pointer_width = "32"))]
-type LONG_PTR = c_long;
-#[cfg(all(windows, target_pointer_width = "64"))]
-type LONG_PTR = __u64;
-
-#[cfg(windows)]
-type LPARAM = LONG_PTR;
-#[cfg(windows)]
-type WPARAM = UINT_PTR;
-#[cfg(windows)]
-type LRESULT = LONG_PTR;
-#[cfg(windows)]
-type PVOID = *mut c_void;
-#[cfg(windows)]
-type HANDLE = PVOID;
-#[cfg(windows)]
-type HINSTANCE = HANDLE;
-#[cfg(windows)]
-type HICON = HANDLE;
-#[cfg(windows)]
-type HBRUSH = HANDLE;
-#[cfg(windows)]
-type HCURSOR = HICON;
-#[cfg(windows)]
-type WNDPROC = extern fn(HWND, UINT, WPARAM, LPARAM) -> LRESULT;
-
-#[cfg(windows)]
-#[repr(C)]
-struct tagWNDCLASSEXA {
-    cbSize: UINT,
-    style: UINT,
-    lpfnWndProc: WNDPROC,
-    cbClsExtra: c_int,
-    cbWndExtra: c_int,
-    hInstance: HINSTANCE,
-    hIcon: HICON,
-    hCursor: HCURSOR,
-    hbrBackground: HBRUSH,
-    lpszMenuName: LPCSTR,
-    lpszClassName: LPCSTR,
-    hIconSm: HICON,
-}
-#[cfg(windows)]
-type WNDCLASSEXA = tagWNDCLASSEXA;
-
-#[cfg(windows)]
-#[link(name = "user32")]
-extern "system" {
-    fn MessageBoxA(hWnd: HWND, lpText: LPCSTR, lpCaption: LPCSTR, uType: UINT) -> c_int;
-    fn RegisterClassExA(Arg1: *const WNDCLASSEXA) -> ATOM;
-}
-
-#[cfg(windows)]
-extern fn wnd_proc(hWnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM) -> LRESULT {
-    println!("{} {} {} {}", hWnd as u64, msg, wParam, lParam);
+extern fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
+    println!("{} {} {} {}", h_wnd as u64, msg, w_param, l_param);
     0
 }
 
