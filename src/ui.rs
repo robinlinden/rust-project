@@ -2,10 +2,10 @@
 mod winapi {
     #![allow(bad_style)]
 
-    use std::os::raw::{c_char, c_ushort, c_int, c_uint, c_void};
+    use std::os::raw::{c_char, c_int, c_uint, c_ushort, c_void};
 
     #[cfg(target_pointer_width = "32")]
-    use std::os::raw::{c_long};
+    use std::os::raw::c_long;
 
     pub type UINT = c_uint;
     pub type HWND = *mut c_void;
@@ -35,7 +35,7 @@ mod winapi {
     pub type HICON = HANDLE;
     pub type HBRUSH = HANDLE;
     pub type HCURSOR = HICON;
-    pub type WNDPROC = extern fn(HWND, UINT, WPARAM, LPARAM) -> LRESULT;
+    pub type WNDPROC = extern "C" fn(HWND, UINT, WPARAM, LPARAM) -> LRESULT;
 
     #[repr(C)]
     pub struct tagWNDCLASSEXA {
@@ -62,14 +62,10 @@ mod winapi {
 }
 
 #[cfg(windows)]
-use {
-    winapi::*,
-    std::ffi::CString,
-    std::ptr::null_mut,
-};
+use {std::ffi::CString, std::ptr::null_mut, winapi::*};
 
 #[cfg(windows)]
-extern fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
+extern "C" fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     println!("{} {} {} {}", h_wnd as u64, msg, w_param, l_param);
     0
 }
@@ -144,7 +140,7 @@ pub fn yes_no_dialog(title: &str, caption: &str, yes_cb: impl Fn() -> (), no_cb:
 
     let mut input = String::new();
     std::io::stdin().read_line(&mut input).unwrap();
-    let ans = input.chars().nth(0);
+    let ans = input.chars().next();
     if ans == Some('y') || ans == Some('Y') {
         yes_cb()
     } else {
