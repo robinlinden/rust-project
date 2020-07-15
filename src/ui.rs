@@ -96,6 +96,8 @@ mod winapi {
     pub const WS_OVERLAPPEDWINDOW: c_long =
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
+    pub const WM_DESTROY: UINT = 0x0002;
+
     #[link(name = "user32")]
     extern "system" {
         pub fn MessageBoxA(hWnd: HWND, lpText: LPCSTR, lpCaption: LPCSTR, uType: UINT) -> c_int;
@@ -124,6 +126,7 @@ mod winapi {
         pub fn TranslateMessage(lpMsg: *const MSG) -> BOOL;
         pub fn DispatchMessageA(lpMsg: *const MSG) -> LRESULT;
         pub fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) -> LRESULT;
+        pub fn PostQuitMessage(nExitCode: c_int) -> c_void;
     }
 }
 
@@ -133,6 +136,11 @@ use {std::ffi::CString, std::ptr::null_mut, winapi::*};
 #[cfg(windows)]
 extern "C" fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     println!("{} {} {} {}", h_wnd as u64, msg, w_param, l_param);
+    if msg == WM_DESTROY {
+        unsafe {
+            PostQuitMessage(0);
+        }
+    }
     unsafe { DefWindowProcA(h_wnd, msg, w_param, l_param) }
 }
 
