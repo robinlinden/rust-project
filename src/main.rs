@@ -5,7 +5,7 @@ use ui::*;
 fn main() {
     #[cfg(windows)]
     {
-        register_a_class();
+        window_test();
     }
 
     message_dialog("Great title", "Hello world");
