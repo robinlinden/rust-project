@@ -4,9 +4,6 @@ mod winapi {
 
     use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_ushort, c_void};
 
-    #[cfg(target_pointer_width = "32")]
-    use std::os::raw::c_long;
-
     pub type UINT = c_uint;
     pub type HWND = *mut c_void;
     pub type LPCSTR = *const c_char;
