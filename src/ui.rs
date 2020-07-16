@@ -90,6 +90,8 @@ mod winapi {
     pub const WS_MINIMIZEBOX: c_long = 0x00020000;
     pub const WS_MAXIMIZEBOX: c_long = 0x00010000;
 
+    pub const WS_EX_APPWINDOW: c_long = 0x00040000;
+
     pub const WS_OVERLAPPEDWINDOW: c_long =
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
@@ -163,7 +165,7 @@ pub fn window_test() {
         RegisterClassExA(&window_class);
         let instance = GetModuleHandleA(null_mut());
         CreateWindowExA(
-            0x00040000,
+            WS_EX_APPWINDOW as DWORD,
             window_class_name.as_c_str().as_ptr(),
             window_class_name.as_c_str().as_ptr(),
             (WS_OVERLAPPEDWINDOW | WS_VISIBLE) as DWORD,
