@@ -1,6 +1,6 @@
 #[cfg(windows)]
 mod winapi {
-    #![allow(bad_style)]
+    #![allow(bad_style, dead_code)]
 
     use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_ushort, c_void};
 
@@ -96,6 +96,11 @@ mod winapi {
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
     pub const WM_DESTROY: UINT = 0x0002;
+    pub const WM_CLOSE: UINT = 0x0010;
+    pub const WM_QUIT: UINT = 0x0012;
+
+    pub const PM_NOREMOVE: UINT = 0x0000;
+    pub const PM_REMOVE: UINT = 0x0001;
 
     #[link(name = "user32")]
     extern "system" {
@@ -121,6 +126,13 @@ mod winapi {
             hWnd: HWND,
             wMsgFilterMin: UINT,
             wMsgFilterMax: UINT,
+        ) -> BOOL;
+        pub fn PeekMessageA(
+            lpMsg: LPMSG,
+            hWnd: HWND,
+            wMsgFilterMin: UINT,
+            wMsgFilterMax: UINT,
+            wRemoveMsg: UINT,
         ) -> BOOL;
         pub fn TranslateMessage(lpMsg: *const MSG) -> BOOL;
         pub fn DispatchMessageA(lpMsg: *const MSG) -> LRESULT;
@@ -180,9 +192,17 @@ pub fn window_test() {
         );
 
         let mut msg = std::mem::MaybeUninit::<MSG>::uninit();
-        while GetMessageA(msg.as_mut_ptr(), null_mut(), 0, 0) == TRUE {
-            TranslateMessage(msg.as_ptr());
-            DispatchMessageA(msg.as_ptr());
+        PeekMessageA(msg.as_mut_ptr(), null_mut(), 0, 0, PM_NOREMOVE);
+        let mut msg = msg.assume_init();
+        while msg.message != WM_QUIT {
+            while PeekMessageA(&mut msg, null_mut(), 0, 0, PM_REMOVE) != 0 {
+                TranslateMessage(&msg);
+                DispatchMessageA(&msg);
+                if msg.message == WM_QUIT {
+                    println!("Window done!");
+                    break;
+                }
+            }
         }
     }
 }
