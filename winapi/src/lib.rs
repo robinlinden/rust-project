@@ -1,4 +1,4 @@
-#![allow(bad_style, dead_code)]
+#![allow(bad_style)]
 
 use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_ushort, c_void};
 
