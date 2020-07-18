@@ -1,6 +1,7 @@
-mod ui;
+mod event_loop;
+mod window;
 
-use ui::*;
+use event_loop::*;
 
 fn main() {
     println!("Running event system");
