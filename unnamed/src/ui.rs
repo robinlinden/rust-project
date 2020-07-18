@@ -1,9 +1,7 @@
 use winapi;
 
-#[cfg(windows)]
 use {std::ffi::CString, std::ptr::null_mut, winapi::*};
 
-#[cfg(windows)]
 extern "C" fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     println!("{} {} {} {}", h_wnd as u64, msg, w_param, l_param);
     if msg == WM_DESTROY {
@@ -90,7 +88,6 @@ fn make_test_window() {
     }
 }
 
-#[cfg(windows)]
 pub fn message_dialog(title: &str, caption: &str) {
     let title = CString::new(title.as_bytes()).unwrap();
     let caption = CString::new(caption.as_bytes()).unwrap();
@@ -104,13 +101,6 @@ pub fn message_dialog(title: &str, caption: &str) {
     }
 }
 
-#[cfg(not(windows))]
-pub fn message_dialog(title: &str, caption: &str) {
-    println!("{}", title);
-    println!("{}", caption);
-}
-
-#[cfg(windows)]
 pub fn yes_no_dialog(title: &str, caption: &str, yes_cb: impl Fn() -> (), no_cb: impl Fn() -> ()) {
     let title = CString::new(title.as_bytes()).unwrap();
     let caption = CString::new(caption.as_bytes()).unwrap();
@@ -127,20 +117,5 @@ pub fn yes_no_dialog(title: &str, caption: &str, yes_cb: impl Fn() -> (), no_cb:
         no_cb()
     } else if res == 6 {
         yes_cb()
-    }
-}
-
-#[cfg(not(windows))]
-pub fn yes_no_dialog(title: &str, caption: &str, yes_cb: impl Fn() -> (), no_cb: impl Fn() -> ()) {
-    println!("{}", title);
-    println!("{}", caption);
-
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input).unwrap();
-    let ans = input.chars().next();
-    if ans == Some('y') || ans == Some('Y') {
-        yes_cb()
-    } else {
-        no_cb()
     }
 }
