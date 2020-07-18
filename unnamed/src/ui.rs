@@ -1,5 +1,3 @@
-use winapi;
-
 use {std::ffi::CString, std::ptr::null_mut, winapi::*};
 
 extern "C" fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {

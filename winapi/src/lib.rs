@@ -119,12 +119,7 @@ extern "system" {
         hInstance: HINSTANCE,
         lpParam: LPVOID,
     ) -> HWND;
-    pub fn GetMessageA(
-        lpMsg: LPMSG,
-        hWnd: HWND,
-        wMsgFilterMin: UINT,
-        wMsgFilterMax: UINT,
-    ) -> BOOL;
+    pub fn GetMessageA(lpMsg: LPMSG, hWnd: HWND, wMsgFilterMin: UINT, wMsgFilterMax: UINT) -> BOOL;
     pub fn PeekMessageA(
         lpMsg: LPMSG,
         hWnd: HWND,
