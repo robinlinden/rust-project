@@ -87,35 +87,3 @@ fn make_test_window() {
         );
     }
 }
-
-pub fn message_dialog(title: &str, caption: &str) {
-    let title = CString::new(title.as_bytes()).unwrap();
-    let caption = CString::new(caption.as_bytes()).unwrap();
-    unsafe {
-        MessageBoxA(
-            null_mut(),
-            caption.as_c_str().as_ptr(),
-            title.as_c_str().as_ptr(),
-            0,
-        );
-    }
-}
-
-pub fn yes_no_dialog(title: &str, caption: &str, yes_cb: impl Fn() -> (), no_cb: impl Fn() -> ()) {
-    let title = CString::new(title.as_bytes()).unwrap();
-    let caption = CString::new(caption.as_bytes()).unwrap();
-    let res = unsafe {
-        MessageBoxA(
-            null_mut(),
-            caption.as_c_str().as_ptr(),
-            title.as_c_str().as_ptr(),
-            4,
-        )
-    };
-
-    if res == 7 {
-        no_cb()
-    } else if res == 6 {
-        yes_cb()
-    }
-}
