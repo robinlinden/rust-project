@@ -135,4 +135,5 @@ extern "system" {
     pub fn PostQuitMessage(nExitCode: c_int) -> c_void;
     pub fn SetWindowLongPtrA(hWnd: HWND, nIndex: c_int, dwNewLong: LONG_PTR) -> LONG_PTR;
     pub fn GetWindowLongPtrA(hWnd: HWND, nIndex: c_int) -> LONG_PTR;
+    pub fn DestroyWindow(hWnd: HWND) -> BOOL;
 }

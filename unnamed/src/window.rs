@@ -2,16 +2,19 @@ use crate::event_loop::{Event, EventLoop};
 use std::{ffi::CString, ptr::null_mut};
 use winapi::*;
 
-extern "C" fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
-    println!("{} {} {} {}", h_wnd as u64, msg, w_param, l_param);
-    if msg == WM_DESTROY {
+extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
+    println!("{} {} {} {}", hwnd as u64, msg, w_param, l_param);
+    if msg == WM_CLOSE {
         let ev_loop = unsafe {
-            let ev_loop: *mut EventLoop = GetWindowLongPtrA(h_wnd, GWLP_USERDATA) as _;
+            let ev_loop: *mut EventLoop = GetWindowLongPtrA(hwnd, GWLP_USERDATA) as _;
             &mut *ev_loop
         };
-        ev_loop.post_event(Event::QuitRequested);
+        ev_loop.post_event(Event::DestroyWindowRequest {
+            id: WindowId { hwnd },
+        });
+        return 0;
     }
-    unsafe { DefWindowProcA(h_wnd, msg, w_param, l_param) }
+    unsafe { DefWindowProcA(hwnd, msg, w_param, l_param) }
 }
 
 pub struct WindowBuilder<'a> {
@@ -20,7 +23,7 @@ pub struct WindowBuilder<'a> {
 }
 
 pub struct WindowId {
-    _hwnd: HWND,
+    hwnd: HWND,
 }
 
 impl WindowBuilder<'_> {
@@ -63,7 +66,7 @@ impl WindowBuilder<'_> {
                 null_mut(),
             );
             SetWindowLongPtrA(hwnd, GWLP_USERDATA, self.event_loop as *mut _ as LONG_PTR);
-            WindowId { _hwnd: hwnd }
+            WindowId { hwnd }
         }
     }
 }
@@ -71,5 +74,11 @@ impl WindowBuilder<'_> {
 impl EventLoop {
     pub fn window_builder<'a>(&'a mut self, title: &'a str) -> WindowBuilder<'a> {
         WindowBuilder::new(self, title)
+    }
+
+    pub fn destroy_window(&self, id: WindowId) {
+        unsafe {
+            DestroyWindow(id.hwnd);
+        }
     }
 }

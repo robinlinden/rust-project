@@ -1,3 +1,4 @@
+use crate::window::WindowId;
 use {std::collections::VecDeque, std::ptr::null_mut, winapi::*};
 
 pub fn quit() {
@@ -7,7 +8,7 @@ pub fn quit() {
 }
 
 pub enum Event {
-    QuitRequested,
+    DestroyWindowRequest { id: WindowId },
     Quit,
 }
 
