@@ -1,7 +1,14 @@
-use {crate::window::make_test_window, std::collections::VecDeque, std::ptr::null_mut, winapi::*};
+use {std::collections::VecDeque, std::ptr::null_mut, winapi::*};
+
+pub fn quit() {
+    unsafe {
+        PostQuitMessage(0);
+    }
+}
 
 pub enum Event {
     QuitRequested,
+    Quit,
 }
 
 pub struct EventLoop {
@@ -10,11 +17,13 @@ pub struct EventLoop {
 
 impl EventLoop {
     pub fn new() -> EventLoop {
-        make_test_window();
-
         EventLoop {
             events: VecDeque::new(),
         }
+    }
+
+    pub fn post_event(&mut self, ev: Event) {
+        self.events.push_back(ev);
     }
 
     pub fn poll_event(&mut self) -> Option<Event> {
@@ -26,8 +35,8 @@ impl EventLoop {
                 while PeekMessageA(&mut msg, null_mut(), 0, 0, PM_REMOVE) != 0 {
                     TranslateMessage(&msg);
                     DispatchMessageA(&msg);
-                    if msg.message == WM_QUIT {
-                        self.events.push_back(Event::QuitRequested);
+                    if let WM_QUIT = msg.message {
+                        self.post_event(Event::Quit)
                     }
                 }
             }

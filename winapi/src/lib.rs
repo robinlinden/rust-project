@@ -100,6 +100,8 @@ pub const WM_QUIT: UINT = 0x0012;
 pub const PM_NOREMOVE: UINT = 0x0000;
 pub const PM_REMOVE: UINT = 0x0001;
 
+pub const GWLP_USERDATA: c_int = -21;
+
 #[link(name = "user32")]
 extern "system" {
     pub fn MessageBoxA(hWnd: HWND, lpText: LPCSTR, lpCaption: LPCSTR, uType: UINT) -> c_int;
@@ -131,4 +133,6 @@ extern "system" {
     pub fn DispatchMessageA(lpMsg: *const MSG) -> LRESULT;
     pub fn DefWindowProcA(hWnd: HWND, Msg: UINT, wParam: WPARAM, lParam: LPARAM) -> LRESULT;
     pub fn PostQuitMessage(nExitCode: c_int) -> c_void;
+    pub fn SetWindowLongPtrA(hWnd: HWND, nIndex: c_int, dwNewLong: LONG_PTR) -> LONG_PTR;
+    pub fn GetWindowLongPtrA(hWnd: HWND, nIndex: c_int) -> LONG_PTR;
 }
