@@ -6,7 +6,8 @@ use event_loop::*;
 fn main() {
     println!("Running event system");
     let mut system = EventLoop::new();
-    system.make_test_window();
+    let _win1 = system.window_builder("great window").build();
+    let _win2 = system.window_builder("bad window").build();
     loop {
         match system.poll_event() {
             Some(Event::QuitRequested) => {

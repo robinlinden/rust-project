@@ -14,9 +14,22 @@ extern "C" fn wnd_proc(h_wnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM)
     unsafe { DefWindowProcA(h_wnd, msg, w_param, l_param) }
 }
 
-impl EventLoop {
-    pub fn make_test_window(&mut self) {
-        let window_class_name = CString::new("great window").unwrap();
+pub struct WindowBuilder<'a> {
+    event_loop: &'a mut EventLoop,
+    title: &'a str,
+}
+
+pub struct WindowId {
+    _hwnd: HWND,
+}
+
+impl WindowBuilder<'_> {
+    pub fn new<'a>(event_loop: &'a mut EventLoop, title: &'a str) -> WindowBuilder<'a> {
+        WindowBuilder { event_loop, title }
+    }
+
+    pub fn build(&mut self) -> WindowId {
+        let window_class_name = CString::new(self.title).unwrap();
         let window_class = WNDCLASSEXA {
             cbSize: std::mem::size_of::<WNDCLASSEXA>() as u32,
             style: 0,
@@ -49,7 +62,14 @@ impl EventLoop {
                 instance,
                 null_mut(),
             );
-            SetWindowLongPtrA(hwnd, GWLP_USERDATA, self as *mut _ as LONG_PTR);
+            SetWindowLongPtrA(hwnd, GWLP_USERDATA, self.event_loop as *mut _ as LONG_PTR);
+            WindowId { _hwnd: hwnd }
         }
+    }
+}
+
+impl EventLoop {
+    pub fn window_builder<'a>(&'a mut self, title: &'a str) -> WindowBuilder<'a> {
+        WindowBuilder::new(self, title)
     }
 }
