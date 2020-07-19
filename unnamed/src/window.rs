@@ -1,5 +1,5 @@
 use crate::event_loop::{Event, EventLoop};
-use std::{ffi::CString, ptr::null_mut};
+use std::{ffi::CString, os::raw::c_int, ptr::null_mut};
 use winapi::*;
 
 extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
@@ -20,15 +20,28 @@ extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) 
 pub struct WindowBuilder<'a> {
     event_loop: &'a mut EventLoop,
     title: &'a str,
+    width: c_int,
+    height: c_int,
 }
 
 pub struct WindowId {
     hwnd: HWND,
 }
 
-impl WindowBuilder<'_> {
-    pub fn new<'a>(event_loop: &'a mut EventLoop, title: &'a str) -> WindowBuilder<'a> {
-        WindowBuilder { event_loop, title }
+impl<'a> WindowBuilder<'a> {
+    pub fn new(event_loop: &'a mut EventLoop, title: &'a str) -> WindowBuilder<'a> {
+        WindowBuilder {
+            event_loop,
+            title,
+            width: 640,
+            height: 480,
+        }
+    }
+
+    pub fn with_size(&mut self, width: c_int, height: c_int) -> &mut WindowBuilder<'a> {
+        self.width = width;
+        self.height = height;
+        self
     }
 
     pub fn build(&mut self) -> WindowId {
@@ -58,8 +71,8 @@ impl WindowBuilder<'_> {
                 (WS_OVERLAPPEDWINDOW | WS_VISIBLE) as DWORD,
                 0,
                 0,
-                640,
-                480,
+                self.width,
+                self.height,
                 null_mut(),
                 null_mut(),
                 instance,
