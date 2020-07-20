@@ -90,7 +90,7 @@ impl<'a> WindowBuilder<'a> {
 }
 
 impl EventLoop {
-    pub fn window_builder(&mut self) -> WindowBuilder {
+    pub fn new_window(&mut self) -> WindowBuilder {
         WindowBuilder::new(self)
     }
 
