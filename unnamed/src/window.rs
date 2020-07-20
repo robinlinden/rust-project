@@ -19,7 +19,7 @@ extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) 
 
 pub struct WindowBuilder<'a> {
     event_loop: &'a mut EventLoop,
-    title: &'a str,
+    title: CString,
     width: c_int,
     height: c_int,
 }
@@ -29,13 +29,18 @@ pub struct WindowId {
 }
 
 impl<'a> WindowBuilder<'a> {
-    pub fn new(event_loop: &'a mut EventLoop, title: &'a str) -> WindowBuilder<'a> {
+    pub fn new(event_loop: &'a mut EventLoop) -> WindowBuilder<'a> {
         WindowBuilder {
             event_loop,
-            title,
+            title: CString::new("no name").unwrap(),
             width: 640,
             height: 480,
         }
+    }
+
+    pub fn with_title(&mut self, title: &str) -> &mut WindowBuilder<'a> {
+        self.title = CString::new(title).unwrap();
+        self
     }
 
     pub fn with_size(&mut self, width: c_int, height: c_int) -> &mut WindowBuilder<'a> {
@@ -45,7 +50,7 @@ impl<'a> WindowBuilder<'a> {
     }
 
     pub fn build(&mut self) -> WindowId {
-        let window_class_name = CString::new(self.title).unwrap();
+        let window_class_name = self.title.as_c_str().as_ptr();
         let window_class = WNDCLASSEXA {
             cbSize: std::mem::size_of::<WNDCLASSEXA>() as u32,
             style: 0,
@@ -57,7 +62,7 @@ impl<'a> WindowBuilder<'a> {
             hCursor: null_mut(),
             hbrBackground: null_mut(),
             lpszMenuName: null_mut(),
-            lpszClassName: window_class_name.as_c_str().as_ptr(),
+            lpszClassName: window_class_name,
             hIconSm: null_mut(),
         };
 
@@ -66,8 +71,8 @@ impl<'a> WindowBuilder<'a> {
             let instance = GetModuleHandleA(null_mut());
             let hwnd = CreateWindowExA(
                 WS_EX_APPWINDOW as DWORD,
-                window_class_name.as_c_str().as_ptr(),
-                window_class_name.as_c_str().as_ptr(),
+                window_class_name,
+                window_class_name,
                 (WS_OVERLAPPEDWINDOW | WS_VISIBLE) as DWORD,
                 0,
                 0,
@@ -85,8 +90,8 @@ impl<'a> WindowBuilder<'a> {
 }
 
 impl EventLoop {
-    pub fn window_builder<'a>(&'a mut self, title: &'a str) -> WindowBuilder<'a> {
-        WindowBuilder::new(self, title)
+    pub fn window_builder(&mut self) -> WindowBuilder {
+        WindowBuilder::new(self)
     }
 
     pub fn destroy_window(&self, id: WindowId) {
