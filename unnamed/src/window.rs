@@ -24,6 +24,7 @@ pub struct WindowBuilder<'a> {
     height: c_int,
 }
 
+#[derive(PartialEq, Eq, Hash)]
 pub struct WindowId {
     hwnd: HWND,
 }
