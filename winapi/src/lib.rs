@@ -1,6 +1,6 @@
 #![allow(bad_style)]
 
-use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_ushort, c_void};
+use std::os::raw::{c_char, c_int, c_long, c_short, c_uint, c_ulong, c_ushort, c_void};
 
 pub type UINT = c_uint;
 pub type HWND = *mut c_void;
@@ -96,11 +96,56 @@ pub const WS_OVERLAPPEDWINDOW: c_long =
 pub const WM_DESTROY: UINT = 0x0002;
 pub const WM_CLOSE: UINT = 0x0010;
 pub const WM_QUIT: UINT = 0x0012;
+pub const WM_LBUTTONDOWN: UINT = 0x0201;
 
 pub const PM_NOREMOVE: UINT = 0x0000;
 pub const PM_REMOVE: UINT = 0x0001;
 
 pub const GWLP_USERDATA: c_int = -21;
+
+pub fn LOWORD(l: DWORD) -> WORD {
+    l as WORD
+}
+
+pub fn HIWORD(l: DWORD) -> WORD {
+    ((l >> 16) & 0xFFFF) as WORD
+}
+
+#[test]
+fn loword_returns_the_low_word() {
+    let dword: DWORD = 0x12345678;
+    let loword: WORD = LOWORD(dword);
+    assert_eq!(loword, 0x5678);
+}
+
+#[test]
+fn hiword_returns_the_high_word() {
+    let dword: DWORD = 0x12345678;
+    let loword: WORD = HIWORD(dword);
+    assert_eq!(loword, 0x1234);
+}
+
+pub fn GET_Y_LPARAM(lp: DWORD) -> c_int {
+    HIWORD(lp) as c_short as c_int
+}
+
+pub fn GET_X_LPARAM(lp: DWORD) -> c_int {
+    LOWORD(lp) as c_short as c_int
+}
+
+#[test]
+fn get_x_lparam_handles_negative_coordinates() {
+    let dword: DWORD = 0x1234ffec;
+    let loword: c_int = GET_X_LPARAM(dword);
+    assert_eq!(loword, -20);
+}
+
+#[test]
+fn get_y_lparam_handles_negative_coordinates() {
+    let dword: DWORD = 0xffec5678;
+    let loword: c_int = GET_Y_LPARAM(dword);
+    assert_eq!(loword, -20);
+}
 
 #[link(name = "user32")]
 extern "system" {

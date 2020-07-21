@@ -7,9 +7,21 @@ pub fn quit() {
     }
 }
 
+pub enum MouseButton {
+    Left,
+}
+
 pub enum Event {
-    DestroyWindowRequest { id: WindowId },
+    DestroyWindowRequest {
+        id: WindowId,
+    },
     Quit,
+    MouseButtonDown {
+        x: f32,
+        y: f32,
+        button: MouseButton,
+        window: WindowId,
+    },
 }
 
 pub struct EventLoop {

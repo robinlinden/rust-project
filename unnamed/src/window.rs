@@ -1,18 +1,25 @@
-use crate::event_loop::{Event, EventLoop};
+use crate::event_loop::{Event, EventLoop, MouseButton};
 use std::{ffi::CString, os::raw::c_int, ptr::null_mut};
 use winapi::*;
 
 extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     println!("{} {} {} {}", hwnd as u64, msg, w_param, l_param);
+    let ev_loop = unsafe {
+        let ev_loop: *mut EventLoop = GetWindowLongPtrA(hwnd, GWLP_USERDATA) as _;
+        &mut *ev_loop
+    };
     if msg == WM_CLOSE {
-        let ev_loop = unsafe {
-            let ev_loop: *mut EventLoop = GetWindowLongPtrA(hwnd, GWLP_USERDATA) as _;
-            &mut *ev_loop
-        };
         ev_loop.post_event(Event::DestroyWindowRequest {
             id: WindowId { hwnd },
         });
         return 0;
+    } else if msg == WM_LBUTTONDOWN {
+        ev_loop.post_event(Event::MouseButtonDown {
+            x: GET_X_LPARAM(l_param as u32) as f32,
+            y: GET_Y_LPARAM(l_param as u32) as f32,
+            button: MouseButton::Left,
+            window: WindowId { hwnd },
+        });
     }
     unsafe { DefWindowProcA(hwnd, msg, w_param, l_param) }
 }
