@@ -22,6 +22,11 @@ pub enum Event {
         button: MouseButton,
         window: WindowId,
     },
+    MouseMove {
+        x: f32,
+        y: f32,
+        window: WindowId,
+    },
 }
 
 pub struct EventLoop {

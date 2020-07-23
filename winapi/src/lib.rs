@@ -98,6 +98,7 @@ pub const WM_CLOSE: UINT = 0x0010;
 pub const WM_QUIT: UINT = 0x0012;
 pub const WM_SETCURSOR: UINT = 0x0020;
 pub const WM_NCHITTEST: UINT = 0x0084;
+pub const WM_MOUSEMOVE: UINT = 0x0200;
 pub const WM_LBUTTONDOWN: UINT = 0x0201;
 
 pub const PM_NOREMOVE: UINT = 0x0000;
