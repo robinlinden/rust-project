@@ -29,7 +29,12 @@ extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) 
                 window: WindowId { hwnd },
             });
         }
-        WM_SETCURSOR | WM_NCHITTEST => (),
+        WM_SETCURSOR | WM_NCHITTEST | WM_GETICON | WM_GETMINMAXINFO | WM_WINDOWPOSCHANGING
+        | WM_NCCREATE | WM_NCMOUSEMOVE | WM_NCLBUTTONDOWN | WM_CAPTURECHANGED | WM_SYSCOMMAND
+        | WM_CREATE | WM_NCCALCSIZE | WM_NCPAINT | WM_IME_SETCONTEXT | WM_IME_NOTIFY
+        | WM_DESTROY | WM_KILLFOCUS | WM_ACTIVATEAPP | WM_ACTIVATE | WM_WINDOWPOSCHANGED
+        | WM_NCDESTROY | WM_NCACTIVATE | WM_NCMOUSELEAVE | 0x90 | WM_SETFOCUS | WM_SIZE
+        | WM_MOVE => (),
         _ => println!("{} {} {} {}", hwnd as u64, msg, w_param, l_param),
     }
     unsafe { DefWindowProcA(hwnd, msg, w_param, l_param) }
