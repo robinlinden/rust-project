@@ -32,7 +32,14 @@ fn main() {
                     use std::hash::{Hash, Hasher};
                     let mut s = DefaultHasher::new();
                     window.hash(&mut s);
-                    println!("Mouse lbutton in {} at {} {}", s.finish(), x, y)
+                    println!("Mouse lbutton down in {} at {} {}", s.finish(), x, y)
+                }
+                Event::MouseButtonUp { x, y, window, .. } => {
+                    use std::collections::hash_map::DefaultHasher;
+                    use std::hash::{Hash, Hasher};
+                    let mut s = DefaultHasher::new();
+                    window.hash(&mut s);
+                    println!("Mouse lbutton up in {} at {} {}", s.finish(), x, y)
                 }
                 Event::MouseMove { x, y, window } => {
                     use std::collections::hash_map::DefaultHasher;

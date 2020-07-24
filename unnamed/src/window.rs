@@ -22,6 +22,14 @@ extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) 
                 window: WindowId { hwnd },
             });
         }
+        WM_LBUTTONUP => {
+            ev_loop.post_event(Event::MouseButtonUp {
+                x: GET_X_LPARAM(l_param as u32) as f32,
+                y: GET_Y_LPARAM(l_param as u32) as f32,
+                button: MouseButton::Left,
+                window: WindowId { hwnd },
+            });
+        }
         WM_MOUSEMOVE => {
             ev_loop.post_event(Event::MouseMove {
                 x: GET_X_LPARAM(l_param as u32) as f32,
