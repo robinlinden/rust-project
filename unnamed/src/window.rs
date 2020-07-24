@@ -1,5 +1,5 @@
 use crate::event_loop::{Event, EventLoop, MouseButton};
-use std::{ffi::CString, os::raw::c_int, ptr::null_mut};
+use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut};
 use winapi::*;
 
 extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
@@ -58,6 +58,12 @@ pub struct WindowBuilder<'a> {
 #[derive(PartialEq, Eq, Hash)]
 pub struct WindowId {
     hwnd: HWND,
+}
+
+impl fmt::Display for WindowId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.hwnd as u64)
+    }
 }
 
 impl<'a> WindowBuilder<'a> {

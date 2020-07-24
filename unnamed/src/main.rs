@@ -28,25 +28,13 @@ fn main() {
                     }
                 }
                 Event::MouseButtonDown { x, y, window, .. } => {
-                    use std::collections::hash_map::DefaultHasher;
-                    use std::hash::{Hash, Hasher};
-                    let mut s = DefaultHasher::new();
-                    window.hash(&mut s);
-                    println!("Mouse lbutton down in {} at {} {}", s.finish(), x, y)
+                    println!("Mouse lbutton down in {} at {} {}", window, x, y)
                 }
                 Event::MouseButtonUp { x, y, window, .. } => {
-                    use std::collections::hash_map::DefaultHasher;
-                    use std::hash::{Hash, Hasher};
-                    let mut s = DefaultHasher::new();
-                    window.hash(&mut s);
-                    println!("Mouse lbutton up in {} at {} {}", s.finish(), x, y)
+                    println!("Mouse lbutton up in {} at {} {}", window, x, y)
                 }
                 Event::MouseMove { x, y, window } => {
-                    use std::collections::hash_map::DefaultHasher;
-                    use std::hash::{Hash, Hasher};
-                    let mut s = DefaultHasher::new();
-                    window.hash(&mut s);
-                    println!("Mouse move in {} at {} {}", s.finish(), x, y)
+                    println!("Mouse move in {} at {} {}", window, x, y)
                 }
             },
 
