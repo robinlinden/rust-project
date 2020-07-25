@@ -17,12 +17,12 @@ fn main() {
             .build(),
     );
     loop {
-        match system.poll_event() {
-            Some(event) => match event {
-                Event::Quit => break,
+        for event in system.poll_events() {
+            match event {
+                Event::Quit => return,
                 Event::DestroyWindowRequest { id } => {
                     windows.remove(&id);
-                    system.destroy_window(id);
+                    EventLoop::destroy_window(&id);
                     if windows.is_empty() {
                         quit();
                     }
@@ -36,12 +36,9 @@ fn main() {
                 Event::MouseMove { x, y, window } => {
                     println!("Mouse move in {} at {} {}", window, x, y)
                 }
-            },
-
-            None => {
-                println!("Yielded!");
-                std::thread::sleep(std::time::Duration::from_millis(500));
             }
         }
+        println!("Yielded!");
+        std::thread::sleep(std::time::Duration::from_millis(500));
     }
 }

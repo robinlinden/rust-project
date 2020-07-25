@@ -132,7 +132,7 @@ impl EventLoop {
         WindowBuilder::new(self)
     }
 
-    pub fn destroy_window(&self, id: WindowId) {
+    pub fn destroy_window(id: &WindowId) {
         unsafe {
             DestroyWindow(id.hwnd);
         }
