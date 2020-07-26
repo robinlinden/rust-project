@@ -2,12 +2,11 @@ use crate::{event::Event, event_loop::EventLoop, mouse_button::MouseButton};
 use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut};
 use winapi::*;
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq)]
 pub struct WindowId {
     hwnd: HWND,
 }
 
-#[derive(PartialEq, Eq, Hash)]
 pub struct Window {
     pub id: WindowId,
 }
