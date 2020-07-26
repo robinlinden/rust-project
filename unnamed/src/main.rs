@@ -1,6 +1,9 @@
+mod event;
 mod event_loop;
+mod mouse_button;
 mod window;
 
+use event::*;
 use event_loop::*;
 use std::collections::HashSet;
 

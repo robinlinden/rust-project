@@ -1,6 +1,20 @@
-use crate::event_loop::{Event, EventLoop, MouseButton};
+use crate::event::Event;
+use crate::event_loop::EventLoop;
+use crate::mouse_button::MouseButton;
 use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut};
+use winapi::HWND;
 use winapi::*;
+
+#[derive(PartialEq, Eq, Hash)]
+pub struct WindowId {
+    hwnd: HWND,
+}
+
+impl fmt::Display for WindowId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.hwnd as u64)
+    }
+}
 
 extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     let ev_loop = unsafe {
@@ -53,17 +67,6 @@ pub struct WindowBuilder<'a> {
     title: CString,
     width: c_int,
     height: c_int,
-}
-
-#[derive(PartialEq, Eq, Hash)]
-pub struct WindowId {
-    hwnd: HWND,
-}
-
-impl fmt::Display for WindowId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.hwnd as u64)
-    }
 }
 
 impl<'a> WindowBuilder<'a> {

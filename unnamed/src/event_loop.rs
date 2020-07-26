@@ -1,38 +1,11 @@
-use crate::window::WindowId;
-use {std::collections::VecDeque, std::ptr::null_mut, winapi::*};
+use crate::event::Event;
+use winapi::*;
+use {std::collections::VecDeque, std::ptr::null_mut};
 
 pub fn quit() {
     unsafe {
         PostQuitMessage(0);
     }
-}
-
-pub enum MouseButton {
-    Left,
-}
-
-pub enum Event {
-    DestroyWindowRequest {
-        id: WindowId,
-    },
-    Quit,
-    MouseButtonDown {
-        x: f32,
-        y: f32,
-        button: MouseButton,
-        window: WindowId,
-    },
-    MouseButtonUp {
-        x: f32,
-        y: f32,
-        button: MouseButton,
-        window: WindowId,
-    },
-    MouseMove {
-        x: f32,
-        y: f32,
-        window: WindowId,
-    },
 }
 
 pub struct EventLoop {
