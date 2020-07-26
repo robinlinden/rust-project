@@ -11,7 +11,11 @@ fn main() {
     println!("Running event system");
     let mut system = EventLoop::new();
     let mut windows = Vec::new();
-    windows.push(Window::builder(&mut system).with_title("great window").build());
+    windows.push(
+        Window::builder(&mut system)
+            .with_title("great window")
+            .build(),
+    );
     windows.push(
         Window::builder(&mut system)
             .with_title("bad window")

@@ -1,5 +1,4 @@
-use crate::mouse_button::MouseButton;
-use crate::window::WindowId;
+use crate::{mouse_button::MouseButton, window::WindowId};
 
 pub enum Event {
     DestroyWindowRequest {

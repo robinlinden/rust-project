@@ -1,6 +1,6 @@
 use crate::event::Event;
+use std::{collections::VecDeque, ptr::null_mut};
 use winapi::*;
-use {std::collections::VecDeque, std::ptr::null_mut};
 
 pub fn quit() {
     unsafe {

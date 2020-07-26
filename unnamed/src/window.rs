@@ -1,8 +1,5 @@
-use crate::event::Event;
-use crate::event_loop::EventLoop;
-use crate::mouse_button::MouseButton;
+use crate::{event::Event, event_loop::EventLoop, mouse_button::MouseButton};
 use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut};
-use winapi::HWND;
 use winapi::*;
 
 #[derive(PartialEq, Eq, Hash)]
@@ -16,7 +13,7 @@ pub struct Window {
 }
 
 impl Window {
-    pub fn builder<'a>(event_loop: &'a mut EventLoop) -> WindowBuilder<'a> {
+    pub fn builder(event_loop: &mut EventLoop) -> WindowBuilder {
         WindowBuilder::new(event_loop)
     }
 }
@@ -150,7 +147,9 @@ impl<'a> WindowBuilder<'a> {
                 null_mut(),
             );
             SetWindowLongPtrA(hwnd, GWLP_USERDATA, self.event_loop as *mut _ as LONG_PTR);
-            Window { id: WindowId { hwnd } }
+            Window {
+                id: WindowId { hwnd },
+            }
         }
     }
 }
