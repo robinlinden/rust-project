@@ -12,16 +12,23 @@ fn main() {
     let mut system = EventLoop::new();
     let mut windows = Vec::new();
     windows.push(
-        Window::builder(&mut system)
+        Window::builder(&system)
             .with_title("great window")
             .build(),
     );
     windows.push(
-        Window::builder(&mut system)
+        Window::builder(&system)
             .with_title("bad window")
             .with_size(200, 200)
             .build(),
     );
+
+    let _w = {
+        let evsys = EventLoop::new();
+        let window = Window::builder(&evsys).build();
+        window
+    };
+
     loop {
         for event in system.poll_events() {
             match event {

@@ -1,5 +1,5 @@
 use crate::{event::Event, event_loop::EventLoop, mouse_button::MouseButton};
-use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut};
+use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut, marker::PhantomData};
 use winapi::*;
 
 #[derive(PartialEq, Eq)]
@@ -7,17 +7,18 @@ pub struct WindowId {
     hwnd: HWND,
 }
 
-pub struct Window {
+pub struct Window<'a> {
     pub id: WindowId,
+    phantom: PhantomData<&'a ()>,
 }
 
-impl Window {
-    pub fn builder(event_loop: &mut EventLoop) -> WindowBuilder {
+impl Window<'_> {
+    pub fn builder(event_loop: &EventLoop) -> WindowBuilder {
         WindowBuilder::new(event_loop)
     }
 }
 
-impl Drop for Window {
+impl Drop for Window<'_> {
     fn drop(&mut self) {
         unsafe {
             DestroyWindow(self.id.hwnd);
@@ -25,7 +26,7 @@ impl Drop for Window {
     }
 }
 
-impl PartialEq<WindowId> for Window {
+impl PartialEq<WindowId> for Window<'_> {
     fn eq(&self, other: &WindowId) -> bool {
         self.id == *other
     }
@@ -84,14 +85,14 @@ extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) 
 }
 
 pub struct WindowBuilder<'a> {
-    event_loop: &'a mut EventLoop,
+    event_loop: &'a EventLoop,
     title: CString,
     width: c_int,
     height: c_int,
 }
 
 impl<'a> WindowBuilder<'a> {
-    pub fn new(event_loop: &'a mut EventLoop) -> WindowBuilder<'a> {
+    pub fn new(event_loop: &'a EventLoop) -> WindowBuilder<'a> {
         WindowBuilder {
             event_loop,
             title: CString::new("no name").unwrap(),
@@ -100,18 +101,18 @@ impl<'a> WindowBuilder<'a> {
         }
     }
 
-    pub fn with_title(&mut self, title: &str) -> &mut WindowBuilder<'a> {
+    pub fn with_title(mut self, title: &str) -> WindowBuilder<'a> {
         self.title = CString::new(title).unwrap();
         self
     }
 
-    pub fn with_size(&mut self, width: c_int, height: c_int) -> &mut WindowBuilder<'a> {
+    pub fn with_size(mut self, width: c_int, height: c_int) -> WindowBuilder<'a> {
         self.width = width;
         self.height = height;
         self
     }
 
-    pub fn build(&mut self) -> Window {
+    pub fn build(self) -> Window<'a> {
         let window_class_name = self.title.as_c_str().as_ptr();
         let window_class = WNDCLASSEXA {
             cbSize: std::mem::size_of::<WNDCLASSEXA>() as u32,
@@ -145,9 +146,10 @@ impl<'a> WindowBuilder<'a> {
                 instance,
                 null_mut(),
             );
-            SetWindowLongPtrA(hwnd, GWLP_USERDATA, self.event_loop as *mut _ as LONG_PTR);
+            SetWindowLongPtrA(hwnd, GWLP_USERDATA, self.event_loop as *const _ as LONG_PTR);
             Window {
                 id: WindowId { hwnd },
+                phantom: PhantomData,
             }
         }
     }
