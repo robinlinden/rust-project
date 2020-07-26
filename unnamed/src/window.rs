@@ -10,6 +10,31 @@ pub struct WindowId {
     hwnd: HWND,
 }
 
+#[derive(PartialEq, Eq, Hash)]
+pub struct Window {
+    pub id: WindowId,
+}
+
+impl Window {
+    pub fn builder<'a>(event_loop: &'a mut EventLoop) -> WindowBuilder<'a> {
+        WindowBuilder::new(event_loop)
+    }
+}
+
+impl Drop for Window {
+    fn drop(&mut self) {
+        unsafe {
+            DestroyWindow(self.id.hwnd);
+        }
+    }
+}
+
+impl PartialEq<WindowId> for Window {
+    fn eq(&self, other: &WindowId) -> bool {
+        self.id == *other
+    }
+}
+
 impl fmt::Display for WindowId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.hwnd as u64)
@@ -90,7 +115,7 @@ impl<'a> WindowBuilder<'a> {
         self
     }
 
-    pub fn build(&mut self) -> WindowId {
+    pub fn build(&mut self) -> Window {
         let window_class_name = self.title.as_c_str().as_ptr();
         let window_class = WNDCLASSEXA {
             cbSize: std::mem::size_of::<WNDCLASSEXA>() as u32,
@@ -125,19 +150,7 @@ impl<'a> WindowBuilder<'a> {
                 null_mut(),
             );
             SetWindowLongPtrA(hwnd, GWLP_USERDATA, self.event_loop as *mut _ as LONG_PTR);
-            WindowId { hwnd }
-        }
-    }
-}
-
-impl EventLoop {
-    pub fn new_window(&mut self) -> WindowBuilder {
-        WindowBuilder::new(self)
-    }
-
-    pub fn destroy_window(id: &WindowId) {
-        unsafe {
-            DestroyWindow(id.hwnd);
+            Window { id: WindowId { hwnd } }
         }
     }
 }

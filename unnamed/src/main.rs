@@ -5,16 +5,15 @@ mod window;
 
 use event::*;
 use event_loop::*;
-use std::collections::HashSet;
+use window::*;
 
 fn main() {
     println!("Running event system");
     let mut system = EventLoop::new();
-    let mut windows = HashSet::new();
-    windows.insert(system.new_window().with_title("great window").build());
-    windows.insert(
-        system
-            .new_window()
+    let mut windows = Vec::new();
+    windows.push(Window::builder(&mut system).with_title("great window").build());
+    windows.push(
+        Window::builder(&mut system)
             .with_title("bad window")
             .with_size(200, 200)
             .build(),
@@ -24,8 +23,7 @@ fn main() {
             match event {
                 Event::Quit => return,
                 Event::DestroyWindowRequest { id } => {
-                    windows.remove(&id);
-                    EventLoop::destroy_window(&id);
+                    windows.retain(|window| *window != id);
                     if windows.is_empty() {
                         quit();
                     }
