@@ -1,5 +1,6 @@
 mod event;
 mod event_loop;
+mod key;
 mod mouse_button;
 mod window;
 
@@ -38,6 +39,12 @@ fn main() {
                 }
                 Event::MouseMove { x, y, window } => {
                     println!("Mouse move in {} at {} {}", window, x, y)
+                }
+                Event::KeyDown { window, key } => {
+                    println!("Key down in {}: {:?}", window, key);
+                }
+                Event::KeyUp { window, key } => {
+                    println!("Key up in {}: {:?}", window, key);
                 }
             }
         }

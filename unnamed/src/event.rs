@@ -1,4 +1,4 @@
-use crate::{mouse_button::MouseButton, window::WindowId};
+use crate::{key::Key, mouse_button::MouseButton, window::WindowId};
 
 pub enum Event {
     DestroyWindowRequest {
@@ -21,5 +21,13 @@ pub enum Event {
         x: f32,
         y: f32,
         window: WindowId,
+    },
+    KeyDown {
+        window: WindowId,
+        key: Key,
+    },
+    KeyUp {
+        window: WindowId,
+        key: Key,
     },
 }

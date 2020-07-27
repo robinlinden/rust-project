@@ -1,4 +1,4 @@
-use crate::{event::Event, event_loop::EventLoop, mouse_button::MouseButton};
+use crate::{event::Event, event_loop::EventLoop, key::keycode_to_key, mouse_button::MouseButton};
 use std::{ffi::CString, fmt, os::raw::c_int, ptr::null_mut};
 use winapi::*;
 
@@ -70,6 +70,18 @@ extern "C" fn wnd_proc(hwnd: HWND, msg: UINT, w_param: WPARAM, l_param: LPARAM) 
                 x: GET_X_LPARAM(l_param as u32) as f32,
                 y: GET_Y_LPARAM(l_param as u32) as f32,
                 window: WindowId { hwnd },
+            });
+        }
+        WM_KEYDOWN => {
+            ev_loop.post_event(Event::KeyDown {
+                window: WindowId { hwnd },
+                key: keycode_to_key(w_param as u8),
+            });
+        }
+        WM_KEYUP => {
+            ev_loop.post_event(Event::KeyUp {
+                window: WindowId { hwnd },
+                key: keycode_to_key(w_param as u8),
             });
         }
         WM_SETCURSOR | WM_NCHITTEST | WM_GETICON | WM_GETMINMAXINFO | WM_WINDOWPOSCHANGING
