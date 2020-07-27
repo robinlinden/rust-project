@@ -6,21 +6,21 @@ pub enum Event {
     },
     Quit,
     MouseButtonDown {
+        window: WindowId,
+        button: MouseButton,
         x: f32,
         y: f32,
-        button: MouseButton,
-        window: WindowId,
     },
     MouseButtonUp {
+        window: WindowId,
+        button: MouseButton,
         x: f32,
         y: f32,
-        button: MouseButton,
-        window: WindowId,
     },
     MouseMove {
+        window: WindowId,
         x: f32,
         y: f32,
-        window: WindowId,
     },
     KeyDown {
         window: WindowId,
