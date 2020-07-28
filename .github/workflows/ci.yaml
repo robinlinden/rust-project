@@ -1,0 +1,20 @@
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: test
+      run: cargo test
+  fmt:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: fmt
+      run: cargo fmt -- --check
+  clippy:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: clippy
+      run: cargo clippy -- -D warnings
