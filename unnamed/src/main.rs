@@ -11,7 +11,7 @@ use window::*;
 fn main() {
     println!("Running event system");
     let mut system = EventLoop::new();
-    let mut windows = vec!{
+    let mut windows = vec![
         Window::builder(&mut system)
             .with_title("great window")
             .build(),
@@ -19,7 +19,7 @@ fn main() {
             .with_title("bad window")
             .with_size(200, 200)
             .build(),
-    };
+    ];
 
     loop {
         for event in system.poll_events() {
